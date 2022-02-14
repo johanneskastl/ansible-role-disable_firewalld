@@ -1,14 +1,13 @@
 ---
 # disable_firewalld/tasks/main.yml
 
-- name: 'Stop, disable and mask the firewalld service'
+- name: 'Stop and disable the firewalld service (and handle errors, if it is not installed)'
   block:
-  - name: 'Stop, disable and mask the service'
+  - name: 'Stop and disable the firewalld service'
     service:
       name: 'firewalld'
       state: 'stopped'
       enabled: 'false'
-      masked: 'true'
 
   # If firewalld is not installed, the previous task will error out
   # but the service will be masked nonetheless
@@ -23,3 +22,7 @@
         that:
           - '"firewalld.service" not in services'
 
+- name: 'Mask the firewalld service'
+  service:
+    name: 'firewalld'
+    masked: 'true'
