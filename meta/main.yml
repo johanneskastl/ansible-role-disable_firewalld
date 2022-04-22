@@ -1,5 +1,6 @@
 galaxy_info:
   role_name: 'disable_firewalld'
+  namespace: 'johanneskastl'
   author: 'Johannes Kastl'
   description: 'Stop, disable and mask firewalld'
   company: 'B1 Systems GmbH'
