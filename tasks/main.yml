@@ -1,26 +1,24 @@
 ---
 # disable_firewalld/tasks/main.yml
 
-- name: 'Stop and disable the firewalld service (and handle errors, if it is not installed)'
-  ansible.builtin.block:
-  - name: 'Stop and disable the firewalld service'
-    service:
-      name: 'firewalld'
-      state: 'stopped'
-      enabled: 'false'
+- name: 'Get list of services'
+  ansible.builtin.service_facts:
 
-  # If firewalld is not installed, the previous task will error out
-  # but the service will be masked nonetheless
+- name: 'Stop the firewalld service'
+  ansible.builtin.service:
+    name: 'firewalld'
+    state: 'stopped'
+  when:
+    - '"firewalld.service" in services'
+    - "services['firewalld.service']['state'] == 'running'"
 
-  # Use a rescue block to handle these errors
-  rescue:
-    - name: 'Get list of services'
-      ansible.builtin.service_facts:
-
-    - name: 'Verify that firewalld is not installed'
-      ansible.builtin.assert:
-        that:
-          - '"firewalld.service" not in services'
+- name: 'Disable the firewalld service'
+  ansible.builtin.service:
+    name: 'firewalld'
+    enabled: false
+  when:
+    - '"firewalld.service" in services'
+    - "services['firewalld.service']['status'] != 'not-found'"
 
 - name: 'Mask the firewalld service'
   ansible.builtin.service:
